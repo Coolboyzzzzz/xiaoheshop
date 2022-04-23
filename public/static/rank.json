@@ -1,0 +1,68 @@
+{
+    "res": [
+        {
+            "name": "阅读的方法",
+            "id": 1,
+            "price": 34.50,
+            "sum": 69,
+            "img": "../../static/img/p4.webp",
+            "discount": 0.8
+        },
+        {
+            "name": "大话中国艺术史",
+            "id": 2,
+            "price": 69,
+            "sum": 169,
+            "img": "../../static/img/p4.webp",
+            "discount": 0.8
+        },
+        {
+            "name": "南明史",
+            "id": 3,
+            "price": 66,
+            "sum": 669,
+            "img": "../../static/img/p4.webp",
+            "discount": 0.8
+        },
+        {
+            "name": "全世界有你就好",
+            "id": 4,
+            "price": 34.50,
+            "sum": 69,
+            "img": "../../static/img/p4.webp",
+            "discount": 0.8
+        },
+        {
+            "name": "宋辽金夏",
+            "id": 5,
+            "price": 34.50,
+            "sum": 69,
+            "img": "../../static/img/p4.webp",
+            "discount": 0.8
+        },
+        {
+            "name": "小家大变局",
+            "id": 6,
+            "price": 384.50,
+            "sum": 69,
+            "img": "../../static/img/p4.webp",
+            "discount": 0.8
+        },
+        {
+            "name": "一古拉的岔路口奇遇",
+            "id": 7,
+            "price": 34.50,
+            "sum": 769,
+            "img": "../../static/img/p4.webp",
+            "discount": 0.8
+        },
+        {
+            "name": "停止你的内在战争",
+            "id": 8,
+            "price": 374.50,
+            "sum": 6669,
+            "img": "../../static/img/p4.webp",
+            "discount": 0.8
+        }
+    ]
+}

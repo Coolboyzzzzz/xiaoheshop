@@ -1,6 +1,8 @@
 <template>
   <div class="container">
-    <img src="../assets/img/banner1.jpg" alt="">
+    <search-bar />
+    <div>    <img src="./img/banner1.jpg" alt="" style=""></div>
+
     <div class="container">
       <!-- 轮播图 -->
       <div id="Carousel">
@@ -83,7 +85,11 @@
 </template>
 
 <script>
+  import searchBar from "../searchBar/searchBar.vue";
 export default {
+  components:{
+searchBar
+  },
   data() {
     return {
       imgUrls: [],

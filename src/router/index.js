@@ -1,8 +1,11 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-
+//重写push方法，让他在当前路径转到当前路径不会报错，官方写的是这样跳转会报错
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location) {
+   return originalPush.call(this, location).catch(err => err)
+}
 Vue.use(VueRouter)
-
 const routes = [
   {
     path: '/',
@@ -20,17 +23,22 @@ const routes = [
       {
         path:'/',
         name:'/',
-        component:() => import('../views/HomeView.vue'),
+        component:() => import('../components/homeContent/homeContent.vue'),
       },
       {
         path:'/login',
         name:'/login',
         component:() => import('../components/login/index.vue'),
-      }
+      },      
+
     ]
       },
       //分类展示页容器
-
+      {
+        path:'/test',
+        name:'/test',
+        component:() => import('../components/goodscar/index.vue'),
+      },
 ]
 
 const router = new VueRouter({

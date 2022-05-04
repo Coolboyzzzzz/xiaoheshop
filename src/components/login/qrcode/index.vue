@@ -6,6 +6,7 @@
 <script>
 import QRCode from "qrcode";
 import {mapMutations} from 'vuex'
+import {qrCode,changeState} from '@/api/login'
 export default {
   name: "QRCode",
   props: {
@@ -67,15 +68,13 @@ export default {
     //   return uuid;
     // }
     async getUUID() {
-      const res = await this.$axios.get("http://43.138.44.90:9001/code");
+      const res = await qrCode()
       console.log(res);
       this.content = res.data;
     },
     async status() {
-      const { data: res } = await this.$axios.get(
-        `http://43.138.44.90:9001/status?qrcode=${this.content}`
-      );
-      if (res.rawData) {
+      const { data: res } = changeState(this.content)
+      if (res.status === 200) {
         console.log(res);
         res.rawData = JSON.parse(res.rawData);
         this.updateToken(res)

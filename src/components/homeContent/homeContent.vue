@@ -86,6 +86,7 @@
 
 <script>
   import searchBar from "../searchBar/searchBar.vue";
+  import { banner } from "@/api/recommend.js";
 export default {
   components:{
 searchBar
@@ -100,13 +101,6 @@ searchBar
     };
   },
   methods: {
-    async getimgUrl() {
-      const {
-        data: { res: res }
-      } = await this.$axios.get("../../static/carousel.json");
-      console.log(res);
-      this.imgUrls = res;
-    },
     async getRank() {
       const {
         data: { res: res }
@@ -118,14 +112,28 @@ searchBar
     },
     BookDetail(id) {
       console.log(id);
-    }
+    },
+        //获取轮播图
+    async getrecommend() {
+      const {data:{data:res}} = await banner();
+   this.imgUrls =  res.map(item => item.banner)
+    },
   },
   created() {
-    this.getimgUrl();
+    this.getrecommend();
     this.getRank();
   },
   mounted(){
-
+    window.onload = function () {
+    //      this.$nextTick(()=>{
+    var dom = document.getElementsByClassName('el-collapse-item__header')
+    for (let i = 0; i < 8; i++) {
+        dom[i].addEventListener("mouseover", () => {
+            dom[i].click()
+        })
+    }
+  //  })
+    }
   }
 };
 </script>
@@ -159,6 +167,7 @@ searchBar
 }
 #rank,
 #advice {
+  z-index: 3;
   padding: 10px 15px 0px 15px;
   width: 250px;
   border: 1px #e9e9e9 solid;
@@ -213,6 +222,8 @@ searchBar
   }
 }
 #banner {
+  height: 607px;
+  overflow: hidden;
   display: flex;
   #advice {
     flex: 1;

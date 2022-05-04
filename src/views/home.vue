@@ -26,6 +26,5 @@ particles
    background-color: rgb(252,252,252);
          position: relative;
  }
-
  </style>
  

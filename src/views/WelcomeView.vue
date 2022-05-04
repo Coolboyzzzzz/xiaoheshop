@@ -40,6 +40,7 @@
 
 <script>
 export default {
+  
   data() {
     return {
       seconds: 3,
@@ -60,7 +61,7 @@ export default {
           this.$router.push({ path: "/home" });
         }
       }, 1000);
-    }
+    },
   }
 };
 </script>

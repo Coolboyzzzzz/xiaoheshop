@@ -8,26 +8,26 @@
       label-width="auto"
       class="demo-ruleForm"
     >
-      <el-form-item prop="user">
+      <el-form-item prop="username">
         <el-input
           type="text"
           :placeholder="holder"
           :prefix-icon="styles == '用户名'? 'el-icon-user-solid' : 'el-icon-message'"
-          v-model="ruleForm.user"
+          v-model="ruleForm.username"
           autocomplete="off"
         ></el-input>
       </el-form-item>
-      <el-form-item prop="pass">
+      <el-form-item prop="password">
         <el-input
           prefix-icon="el-icon-s-goods"
           placeholder="请输入密码"
           type="password"
-          v-model="ruleForm.pass"
+          v-model="ruleForm.password"
           autocomplete="off"
         ></el-input>
       </el-form-item>
       <el-form-item prop="code">
-        <div class="login-code" width="100%" style="display:flex">
+        <div class="login-code" style="display:flex">
           <!--验证码组件-->
           <el-input
             prefix-icon="el-icon-message-solid"
@@ -46,7 +46,7 @@
         <a>用户协议、隐私政策</a>
       </div>
       <el-form-item>
-        <el-button size="medium" type="danger" @click="submitForm('SignIn')">登录</el-button>
+        <el-button size="medium" type="danger" @click="submitLogin('SignIn',styles)">登录</el-button>
       </el-form-item>
       <div id="register">
         <!-- 分别传入不同的值，动态渲染drawer组件 -->
@@ -55,51 +55,135 @@
         <a @click="register(['SignIn','忘记密码'])">忘记密码</a>
       </div>
     </el-form>
-  <!-- 导入注册组件 -->
-      <el-drawer
-        :title="flag"
-        :visible.sync="drawer"
-        direction="rtl" 
-        :before-close="handleClose"
-        append-to-body
-        size="35%"
-        :wrapperClosable="false"
+    <!-- 导入注册组件 -->
+    <el-drawer
+      :title="flag"
+      :visible.sync="drawer"
+      direction="rtl"
+      :before-close="handleClose"
+      append-to-body
+      size="680"
+      :modal-append-to-body='false'
+      :wrapperClosable="false"
+    >
+      <el-form
+        v-if="flag ==='注册'"
+        :model="ruleForm"
+        status-icon
+        :rules="rules"
+        ref="register"
+        label-width="100px"
+        class="demo-ruleForm zhuce"
       >
-        <el-form v-if="flag ==='注册'"
-          :model="ruleForm"
-          status-icon
-          :rules="rules"
-          ref="register"
-          label-width="100px"
-          class="demo-ruleForm zhuce"
-        >
-          <el-form-item prop="user">
+        <el-form-item prop="user">
+          <el-input
+            type="text"
+            placeholder="请输入用户名"
+            prefix-icon="el-icon-user-solid"
+            v-model="ruleForm.user"
+            autocomplete="off"
+          ></el-input>
+        </el-form-item>
+        <el-form-item prop="pass">
+          <el-input
+            type="password"
+            prefix-icon="el-icon-s-goods"
+            placeholder="请输入密码"
+            v-model="ruleForm.pass"
+            autocomplete="off"
+          ></el-input>
+        </el-form-item>
+        <el-form-item prop="pass2">
+          <el-input
+            type="password"
+            prefix-icon="el-icon-s-goods"
+            placeholder="请重复输入密码"
+            v-model="ruleForm.pass2"
+            autocomplete="off"
+          ></el-input>
+        </el-form-item>
+        <el-form-item prop="email">
+          <el-input
+            prefix-icon="el-icon-message"
+            placeholder="请输入邮箱"
+            type="text"
+            v-model="ruleForm.email"
+            autocomplete="off"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item prop="checkEmail" class="haveCode">
+          <div class="login-code" style="display:flex;justify-content:space-between">
+            <!--验证码组件-->
             <el-input
+              prefix-icon="el-icon-message-solid"
               type="text"
-              placeholder="请输入用户名"
-              prefix-icon="el-icon-user-solid"
-              v-model="ruleForm.user"
-              autocomplete="off"
+              placeholder="请输入验证码"
+              v-model="ruleForm.checkEmail"
+              class="shipei"
             ></el-input>
-          </el-form-item>
+            <div>
+              <el-button
+                :disabled="disabled"
+                :loading="loading"
+                type="danger"
+                @click="sendEmail"
+                class="guding"
+              >{{content}}</el-button>
+            </div>
+          </div>
+        </el-form-item>
+
+        <el-form-item>
+          <el-button type="danger" @click="submitRegister('register')">注册</el-button>
+        </el-form-item>
+      </el-form>
+      <el-form
+        v-else
+        :model="ruleForm"
+        status-icon
+        :rules="rules"
+        ref="register"
+        label-width="100px"
+        class="demo-ruleForm zhuce"
+      >
+      <!-- 忘记密码 -->
+        <template v-if="showForget">
           <el-form-item prop="email">
             <el-input
-              prefix-icon="el-icon-message"
-              placeholder="请输入邮箱"
               type="text"
+              placeholder="请输入邮箱找回密码"
+              prefix-icon="el-icon-message"
               v-model="ruleForm.email"
               autocomplete="off"
             ></el-input>
           </el-form-item>
-          <el-form-item prop="phone">
-            <el-input
-              prefix-icon="el-icon-phone"
-              placeholder="请输入手机号"
-              type="text"
-              v-model="ruleForm.phone"
-              autocomplete="off"
-            ></el-input>
+          <el-form-item prop="checkEmail" class="haveCode">
+            <div class="login-code" style="display:flex;justify-content:space-between">
+              <!--验证码组件-->
+              <el-input
+                prefix-icon="el-icon-message-solid"
+                type="text"
+                placeholder="请输入验证码"
+                v-model="ruleForm.checkEmail"
+                class="shipei"
+              ></el-input>
+              <div>
+                <el-button
+                  :disabled="disabled"
+                  :loading="loading"
+                  type="danger"
+                  @click="sendEmail"
+                  class="guding"
+                >{{content}}</el-button>
+              </div>
+            </div>
           </el-form-item>
+          <el-form-item>
+            <el-button type="danger" @click="resetPass">提交</el-button>
+          </el-form-item>
+        </template>
+        <template v-else>
           <el-form-item prop="pass">
             <el-input
               type="password"
@@ -119,40 +203,11 @@
             ></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="submitForm('register')">注册</el-button>
+            <el-button type="danger" @click="resetPass2">提交</el-button>
           </el-form-item>
-        </el-form>
-        <el-form v-else
-          :model="ruleForm"
-          status-icon
-          :rules="rules"
-          ref="register"
-          label-width="100px"
-          class="demo-ruleForm zhuce"
-        >
-          <el-form-item prop="email">
-            <el-input
-              type="text"
-              placeholder="请输入邮箱找回密码"
-              prefix-icon="el-icon-message"
-              v-model="ruleForm.email"
-              autocomplete="off"
-            ></el-input>
-          </el-form-item>
-            <el-form-item prop='code'>
-            <el-input 
-              type="text"
-              placeholder="请输入验证码"
-              prefix-icon="el-icon-message-solid"
-              v-model="ruleForm.code"
-              autocomplete="off"
-            ></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type='danger'>提交</el-button>
-          </el-form-item>
-        </el-form>
-      </el-drawer>
+        </template>
+      </el-form>
+    </el-drawer>
     <div class="bottom">小何网上书城，买的安心，看的舒心！</div>
   </div>
 </template>
@@ -164,6 +219,15 @@
 */
 
 import validator from "./validator_code.vue";
+import {
+  register,
+  checkEmail,
+  sendEmailapi,
+  login,
+  emailLogin,
+  reset
+} from "../../api/login.js";
+import {mapMutations} from 'vuex'
 export default {
   props: ["styles"],
   components: {
@@ -197,12 +261,14 @@ export default {
     return {
       ruleForm: {
         user: "",
+        username: "",
         pass: "",
-        age: "",
+        password: "",
         code: "",
         pass2: "",
         email: "",
-        phone: ""
+        phone: "",
+        checkEmail: ""
       },
       identifyCodes: "1234567890abcdefjhijklinopqrsduvwxyz", //随机串内容
       identifyCode: "",
@@ -223,6 +289,10 @@ export default {
           }
         ],
         code: [{ validator: checkcode, trigger: "blur" }],
+        checkEmail: [
+          { required: true, message: "请输入验证码", trigger: "blur" },
+          { max: 4, min: 4, message: "请输入4位验证码", trigger: "blur" }
+        ],
         pass2: [
           { validator: validatePass2, trigger: "blur" },
           { required: true, message: "请再次输入密码", trigger: "blur" }
@@ -234,16 +304,31 @@ export default {
             message: "请输入正确的邮箱"
           }
         ],
-        phone: [
-          { required: true, message: "请输入手机号", trigger: "blur" },
-          {
-            pattern: /^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,3,5-9]))\d{8}$/,
-            message: "请输入正确的手机号"
-          }
+        // phone: [
+        //   { required: true, message: "请输入手机号", trigger: "blur" },
+        //   // {
+        //   //   pattern: /^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,3,5-9]))\d{8}$/,
+        //   //   message: "请输入正确的手机号"
+        //   // }
+        // ]
+        password: [{ required: true, message: "请输入密码", trigger: "blur" }],
+        username: [
+          { required: true, message: `请输入${this.styles}`, trigger: "blur" }
         ]
       },
-      drawer: false,//控制注册页面的开关
-      flag:''//控制子组件显示的是注册页面还是找回密码界面
+      drawer: false, //控制注册页面的开关
+      flag: "", //控制子组件显示的是注册页面还是找回密码界面
+      //按钮的loading效果
+      loading: false,
+      //按钮的默认显示文本
+      content: "发送验证码",
+      time: null,
+      //发送邮件按钮倒计时
+      totalTime: 10,
+      //设置按钮是否可以点击
+      disabled: false,
+      //控制忘记密码组件的下一步
+      showForget:true
     };
   },
   mounted() {
@@ -252,11 +337,13 @@ export default {
     this.makeCode(this.identifyCodes, 4);
   },
   methods: {
+    ...mapMutations('m_users',['updateToken']),
     // 重置验证码
     refreshCode() {
       this.identifyCode = "";
       this.makeCode(this.identifyCodes, 4);
     },
+    //制作验证码
     makeCode(o, l) {
       for (let i = 0; i < l; i++) {
         this.identifyCode += this.identifyCodes[
@@ -267,22 +354,103 @@ export default {
     randomNum(min, max) {
       return Math.floor(Math.random() * (max - min) + min);
     },
-    submitForm(formName) {
-      this.$refs[formName].validate(valid => {
+    //注册事件
+    submitregister(formName) {
+      this.$refs[formName].validate(async valid => {
         if (valid) {
-          alert("submit!");
+          const { data: res } = await checkEmail({
+            email: this.ruleForm.email,
+            code: this.ruleForm.checkEmail
+          });
+          if (res.code == 200) {
+            const { data: result } = await register({
+              username: this.ruleForm.user,
+              password: this.ruleForm.pass,
+              email: this.ruleForm.email
+            });
+            if (result.code == 200) {
+              this.$notify.success({
+                title: "提示",
+                message: result.message
+              });
+              this.drawer = false;
+            } else {
+              this.$notify.error({
+                title: "错误",
+                message: result.message
+              });
+            }
+          } else {
+            this.$notify.error({
+              title: "错误",
+              message: res.message
+            });
+          }
+          console.log(res);
+          //  .then((res,rej)=>{
+          //       console.log(res)
+          //       })
         } else {
           console.log("error submit!!");
           return false;
         }
       });
     },
+    //登录事件  用户名登录和邮箱登录
+    submitLogin(formName, cur) {
+      var fromdata = {
+        username: this.ruleForm.username,
+        password: this.ruleForm.password
+      };
+      this.$refs[formName].validate(async valid => {
+        if (valid) {
+          if (cur == "用户名") {
+            const { data: res } = await login(fromdata);
+            if (res.status === 200) {
+              this.$notify.success({
+                title: "成功",
+                message: res.message
+              });
+              //把服务器返回的token存储
+              this.updateToken(res.token)
+              this.$router.push('/home')
+            } else {
+              this.$notify.error({
+                title: "失败",
+                message: res.message
+              });
+            }
+          } else {
+            const { data: res } = await emailLogin(fromdata);
+            if (res.status === 200) {
+              this.$notify.success({
+                title: "成功",
+                message: res.message
+              });
+              this.updateToken(res.token)
+              this.$router.push('/home')
+            } else {
+              this.$notify.error({
+                title: "失败",
+                message: res.message
+              });
+            }
+          }
+        } else {
+          this.$notify.error({
+            title: "失败",
+            message: "请检查输入表单数据是否合法"
+          });
+        }
+      });
+    },
+
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
     //跳转注册页面
     register(formName) {
-     this.flag =  formName[1] 
+      this.flag = formName[1];
       this.$refs[formName[0]].resetFields();
       this.drawer = true;
     },
@@ -294,6 +462,79 @@ export default {
           this.$refs["register"].resetFields();
         })
         .catch(_ => {});
+    },
+    //发送验证码
+    sendEmail() {
+      this.loading = true;
+      this.$refs["register"].validateField("email", async err => {
+        if (err) {
+          this.$notify.error({
+            title: "提示",
+            message: err
+          });
+          this.loading = false;
+        } else {
+          const res = await sendEmailapi({ email: this.ruleForm.email });
+          this.disabled = true;
+          this.loading = false;
+          this.$notify.success({
+            title: "提示",
+            message: "邮件发送成功，请注意查收！"
+          });
+          this.time = setInterval(() => {
+            this.totalTime--;
+            this.content = `${this.totalTime}s后重新发送`;
+            if (this.totalTime == 0) {
+              this.disabled = false;
+              this.content = "重新发送验证码";
+              this.totalTime = 10;
+              clearInterval(this.time);
+            }
+          }, 1000);
+        }
+      });
+    },
+    resetPass() {
+
+      this.$refs["register"].validate(async valid => {
+        if (valid) {
+          const { data: res } = await checkEmail({
+            email: this.ruleForm.email,
+            code: this.ruleForm.checkEmail
+          });
+          if (res.code == 200) {
+            this.$notify.success({
+              message: "验证成功"
+            });
+       this.showForget = false
+          }
+        }
+      });
+    },   //重置密码
+    resetPass2() {
+this.$refs["register"].validate(async valid => {
+if(valid){
+const {data:res} = await reset({
+  email:this.ruleForm.email,
+  password:this.ruleForm.pass
+})
+if(res.code == 200){
+  this.$notify.success({
+    message:res.message
+  })
+}else{
+    this.$notify.error({
+    message:res.message
+  })
+}
+  this.drawer = false
+}else{
+  this.$notify.error({
+    message:'检查表单数据是否合法'
+  })
+}
+
+})
     }
   },
   computed: {
@@ -359,11 +600,33 @@ export default {
   margin: 0;
   padding: 20px;
 }
+.el-drawer .el-input {
+  width: 340px;
+}
+.el-drawer{
+  z-index: 99999;
+}
 // 注册组件自定义样式
 .zhuce {
   /deep/.el-form-item__content {
     margin: 0 50px 0 50px !important;
   }
 }
+.haveCode {
+  display: flex;
+  .el-input {
+    margin-right: 50px;
+  }
+}
+
+.shipei {
+  width: 150px !important;
+}
+.guding {
+  width: 130px;
+}
+// /deep/.el-drawer__wrapper{
+//   z-index: 9999999;
+// }
 </style>
 

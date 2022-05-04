@@ -29,7 +29,11 @@ const routes = [
         path:'/login',
         name:'/login',
         component:() => import('../components/login/index.vue'),
-      },      
+      }, {
+        path:'/mycart',
+        name:'/mycart',
+        component:() => import('../components/my_cart/my_cart.vue'),
+      }     
 
     ]
       },

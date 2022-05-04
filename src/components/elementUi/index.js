@@ -24,7 +24,14 @@ import {
     Notification,
     Loading,
     PageHeader,
-    Popover
+    Popover,
+    Autocomplete,
+    Card,
+    Breadcrumb,
+    BreadcrumbItem,
+    Col,
+    Row,
+    InputNumber
 } from 'element-ui'
 
 const coms = [
@@ -48,7 +55,14 @@ const coms = [
     TabPane,
     FormItem,
     PageHeader,
-    Popover
+    Popover,
+    Autocomplete,
+    Card,
+    Breadcrumb,
+    BreadcrumbItem,
+    Col,
+    Row,
+    InputNumber
 ]
 export default {
     install(Vue, options) {

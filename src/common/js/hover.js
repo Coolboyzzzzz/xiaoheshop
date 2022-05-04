@@ -1,10 +1,4 @@
 window.onload = function () {
-    var dom = document.getElementsByClassName('el-collapse-item__header')
-    for (let i = 0; i < dom.length; i++) {
-        dom[i].addEventListener("mouseover", () => {
-            dom[i].click()
-        })
-    }
     var title1 = '【　　　】小何网上书城';
     var title2 = '【新提醒】小何网上书城';
     var i = 0;

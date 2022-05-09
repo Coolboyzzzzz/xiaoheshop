@@ -31,7 +31,13 @@ import {
     BreadcrumbItem,
     Col,
     Row,
-    InputNumber
+    InputNumber,
+    Steps,
+    Step,
+    Descriptions,
+    DescriptionsItem,
+    Tag,
+    Dialog,
 } from 'element-ui'
 
 const coms = [
@@ -62,15 +68,21 @@ const coms = [
     BreadcrumbItem,
     Col,
     Row,
-    InputNumber
+    InputNumber,
+    Steps,
+    Step,
+    Descriptions,
+    DescriptionsItem,
+    Tag,
+    Dialog,
 ]
 export default {
     install(Vue, options) {
         coms.map(c => {
-            Vue.component(c.name,c)
+            Vue.component(c.name, c)
         })
         Vue.use(Loading);    // 使用服务方式的话，只安装Loading即可
-Vue.use(Loading.directive);
+        Vue.use(Loading.directive);
         Vue.prototype.$message = Message;
         Vue.prototype.$confirm = MessageBox.confirm;
         Vue.prototype.$alert = MessageBox.alert;

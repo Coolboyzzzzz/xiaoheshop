@@ -2,51 +2,64 @@
 <template>
   <div class="container">
     <!-- 如果有购物车数据 -->
-    <template v-if="true">
+    <template v-if="cart.length">
       <el-card class="box-card">
         <div slot="header" class="headerCart">
           <span class="switch-cart">
             购物车（全部
-            <span style="font-weight:700">70</span>）
+            <span style="font-weight:700">{{total}}</span>）
           </span>
           <div class="car_sum">
             <span class="pay-text">
               已选商品（不含运费）
-              <span class="total">0.00</span>
+              <span ref="pre" class="total">￥{{sum.pre}}</span>
+              <span ref="cur" v-if="show">活动满减优惠后：￥{{sum.cur}}</span>
             </span>
-            <el-button type="danger">结算</el-button>
+            <router-link to="/pay">
+              <el-button type="danger">结算</el-button>
+            </router-link>
           </div>
+          <!-- 显示满减的优惠金额 -->
+          <div class="showmoney">
+            <span v-html="money"></span></div>
         </div>
         <div class="contentTop">
-        <el-row :gutter="20">
-          <el-col :span="2">
-            <div class="grid-content">
-              <div class="selectAll">
-                <input type="checkbox">
-                <span>全选</span>
-              </div>
-            </div>
-          </el-col>
-          <el-col :span="10">
-            <div class="grid-content">
-              <span>商品信息</span>
-            </div>
-          </el-col>
-          <el-col :span="3">
-            <div class="grid-content">单价</div>
-          </el-col>
-          <el-col :span="3">
-            <div class="grid-content">数量</div>
-          </el-col>
-          <el-col :span="3">
-            <div class="grid-content">金额</div>
-          </el-col>
-          <el-col :span="3">
-            <div class="grid-content">操作</div>
-          </el-col>
-        </el-row>
+          <el-row :gutter="20">
+            <el-col :span="2">
+              <div class="grid-content">
+                <div class="selectAll" >
+                  <input type="checkbox" @change="changeSelect" :checked="status">
+                  <span>全选</span>
                 </div>
-           <cartgoods v-for="(item,index) in [1,2,3,2,1,1]" :key="index"/>
+              </div>
+            </el-col>
+            <el-col :span="10">
+              <div class="grid-content">
+                <span>商品信息</span>
+              </div>
+            </el-col>
+            <el-col :span="3">
+              <div class="grid-content">单价</div>
+            </el-col>
+            <el-col :span="3">
+              <div class="grid-content">数量</div>
+            </el-col>
+            <el-col :span="3">
+              <div class="grid-content">金额</div>
+            </el-col>
+            <el-col :span="3">
+              <div class="grid-content">操作</div>
+            </el-col>
+          </el-row>
+        </div>
+        <cartgoods
+          @changNum="updataNum"
+          @changeState="changestate"
+          @dele="deleteGoods"
+          v-for="(goods,index) in cart"
+          :key="index"
+          :goods="goods"
+        />
       </el-card>
     </template>
 
@@ -60,11 +73,82 @@
 <script>
 //购物车为空的页面
 import empty from "./cartEmpty/empty.vue";
-import cartgoods from './cartgoods/cartgoods.vue'
+import cartgoods from "./cartgoods/cartgoods.vue";
+import { mapState, mapMutations, mapGetters } from "vuex";
+import { getCart } from '@/api/user.js'
 export default {
   components: {
     empty,
     cartgoods
+  },
+  data() {
+    return {
+      show: false,
+      cart:[]
+    };
+  },
+  computed: {
+    ...mapGetters("m_cart", ["status", "total", "sum"]),
+    money() {
+      if (this.sum.pre < 100) {
+        return `还差<span style="color: #FF7800;font-size:14px;">${(100 - this.sum.pre).toFixed(2)}</span>元可参与<span style="color: #FF7800;font-size:14px;">满100减50</span>`;
+      } else {
+        return `已参与<span style="color: #FF7800;font-size:14px;">满100减50</span>,已优惠<span style="color: #FF7800;font-size:14px;">${(this.sum.pre - this.sum.cur).toFixed(
+          2
+        )}</span>元`;
+      }
+    }
+  },
+  watch: {
+    sum: {
+      immediate: true,
+      handler() {
+        if (this.sum.pre >= 100) {
+          this.show = true;
+          this.$nextTick(() => {
+            this.$refs["pre"].style.textDecoration = "line-through";
+            this.$refs["pre"].classList.remove("total");
+            this.$refs["cur"].classList.add("total");
+          });
+        } else {
+          this.show = false;
+          this.$nextTick(() => {
+            this.$refs["pre"].style.textDecoration = "none";
+            this.$refs["pre"].classList.add("total");
+          });
+        }
+      }
+    }
+  },
+  methods: {
+    ...mapMutations("m_cart", [
+      "updatanum",
+      "updatacart",
+      "checkedAll",
+      "deletegoods"
+    ]),
+    updataNum(obj) {
+      this.updatanum(obj);
+    },
+    changestate(obj) {
+      this.updatacart(obj);
+    },
+    changeSelect() {
+      console.log(45)
+      this.checkedAll(this.status);
+    },
+    deleteGoods(id) {
+      this.deletegoods(id);
+    },
+    //获取购物车数据
+   async getCart(){
+  const {data:res} =   await  getCart()
+  if(res.code !== 200) return this.$message(res.message)
+  this.cart = res.message
+    }
+  },
+  created(){
+this.getCart()
   }
 };
 </script>
@@ -113,14 +197,19 @@ export default {
     height: 42px;
     border-radius: 21px;
   }
+  .showmoney {
+    position: absolute;
+    top: 56px;
+    right: 114px;
+  }
 }
 .contentTop {
   color: #3c3c3c;
   font-weight: 700;
   span {
     font-weight: 700;
-          position: relative;
-      top: -2px;
+    position: relative;
+    top: -2px;
   }
   .selectAll {
     input {
@@ -133,7 +222,7 @@ export default {
     }
   }
 }
-.el-row{
-    width: 1200px;
+.el-row {
+  width: 1200px;
 }
 </style>

@@ -51,30 +51,22 @@
             @focus="transshow"
             @blur="transNoshow"
           >
-            <!-- <el-select v-model="select" slot="prepend" placeholder="请选择">
-              <el-option label="餐厅名" value="1"></el-option>
-              <el-option label="订单号" value="2"></el-option>
-              <el-option label="用户电话" value="3"></el-option>
-            </el-select>-->
             <el-button
               slot="append"
               style="font-size:20px"
               icon="el-icon-search"
-              @click="searchBook"
+              @click="searchBook(input3)"
             ></el-button>
           </el-input>
+          <!-- 默认展开搜索历史 -->
           <ul class="suggest" v-if="showsuggest">
-            <!-- <div v-if="!input3">
-              搜索历史：
-              <el-tag v-for="(item,index) in searchHistory" :key="index">{{item}}</el-tag>
-            </div>-->
             <template v-if="!input3">
               <div style="color:rgb(150,150,150)">搜索历史：</div>
               <template v-if="!searchHistory[0]">
                 <span class="empty">空空如也，快去搜索把~~~</span>
               </template>
-              <li @click="history" v-for="(item,index) in searchHistory" :Key="index+item">
-                <span>{{item.bookname}}</span>
+              <li @click="searchBook(item)" v-for="(item,index) in trueHistory" :Key="index+item">
+                <span>{{item}}</span>
                 <span
                   @click.stop="deleteHistory(index)"
                   class="delete"
@@ -82,8 +74,10 @@
                 >删除</span>
               </li>
             </template>
-            <div class="empty" v-if="searchSuggest.length == 0 && input3">暂无搜索结果</div>
-            <li v-for="(item,index) in searchSuggest" :Key="index">
+            <!-- 如果用户输入搜索词并且无返回数据 -->
+            <div class="empty" v-if="searchResult && input3">暂无搜索结果</div>
+            <!-- 如果用户输入搜索词并且有返回数据 -->
+            <li v-for="(item,index) in searchSuggest" :Key="index" @click="gotoGoods(item)">
               <span v-html="brightenKeyword(item.bookname, input3)">{{item.bookname}}</span>
             </li>
           </ul>
@@ -96,7 +90,7 @@
           <div class="searchtext" style="backgroundColor:red">
             <i style="font-size:20px;padding-right:5px" class="el-icon-shopping-cart-2"></i>
             <router-link to="/mycart">购物车</router-link>
-            <span>{{num}}</span>
+            <span>{{total}}</span>
           </div>
           <div class="searchtext" style="backgroundColor:rgb(246,246,246);">
             <router-link to="/login" style="color: rgb(100,100,100);">我的订单</router-link>
@@ -109,7 +103,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapMutations,mapGetters } from "vuex";
 import { getUserInfo } from "@/api/user.js";
 import { banner, suggest } from "@/api/recommend.js";
 export default {
@@ -122,15 +116,22 @@ export default {
       searchSuggest: [], //搜索建议
       showsuggest: false,
       searchHistory: JSON.parse(window.localStorage.getItem("search")) || [], //搜索历史
-      time:null,//防抖延时器
+      time: null, //防抖延时器
+      searchResult:false
     };
   },
   created() {
     this.getUser();
     this.getrecommend();
+
   },
   computed: {
-    ...mapState("m_users", ["token", "userinfo"])
+    ...mapState("m_users", ["token", "userinfo"]),
+    ...mapGetters("m_cart", ['total']),
+    trueHistory(){
+      return this.searchHistory.reverse()
+    },
+
   },
   methods: {
     ...mapMutations("m_users", ["updataUser", "updateToken"]),
@@ -156,6 +157,7 @@ export default {
     },
     ss() {
       console.log("cuee", this.token);
+          console.log(this.total)
     },
     //退出登录事件
     quit() {
@@ -166,18 +168,21 @@ export default {
       this.$message("退出登录成功！");
     },
     //得到搜索建议
-     getSuggest() {
+    getSuggest() {
+      //每次搜索都让他不显示
+      this.searchResult = false
       //如果输入为空则不请求,利用防抖进行搜索请求，减轻服务器压力
-      if (this.input3.trim() == "") return this.searchSuggest = [];
-      clearTimeout(this.time)
-      this.time = setTimeout( async ()=>{
+      if (this.input3.trim() == "") return (this.searchSuggest = []);
+      clearTimeout(this.time);
+      this.time = setTimeout(async () => {
         //防止出现bug，等延迟到了 再次判断是否输入框为空
-       if (this.input3.trim() == "") return (this.searchSuggest = []);
-      const res = await suggest(this.input3);
-      this.searchSuggest = res.data.data;
-      console.log(this.searchSuggest);
-      },1000)
-
+        if (this.input3.trim() == "") return (this.searchSuggest = []);
+        const res = await suggest(this.input3);
+        this.searchSuggest = res.data.data;
+        //如果真没有那么就改变状态让显示
+        if(this.searchSuggest.length == 0) this.searchResult = true
+        console.log(this.searchSuggest);
+      }, 1000);
     },
     //点击搜索框时展开搜索建议
     transshow() {
@@ -190,26 +195,22 @@ export default {
         this.showsuggest = false;
       }, 100);
     },
-    //搜索时的事件
-    searchBook() {
-      this.updataHistory()
-    },
     //搜索时更新搜索历史
-    updataHistory() {
+    updataHistory(text) {
       if (!this.input3.trim()) return;
       var item = window.localStorage.getItem("search");
       var item1 = item ? JSON.parse(item) : [];
       //如果发现重复的搜索,则把之前的删除，追加到最后
-      var index = item1.findIndex(item => item == this.input3);
+      var index = item1.findIndex(item => item == text);
       if (index >= 0) {
         item1.splice(index, 1);
       }
       //利用队列先进先出
       if (item1.length >= 5) {
         item1.shift();
-        item1.push({bookname:this.input3});
+        item1.push(text);
       } else {
-        item1.push({bookname:this.input3});
+        item1.push(text);
       }
       this.searchHistory = item1;
       window.localStorage.setItem("search", JSON.stringify(item1));
@@ -240,10 +241,22 @@ export default {
       item.splice(index, 1);
       this.searchHistory = item;
       window.localStorage.setItem("search", JSON.stringify(item));
+    }, //搜索时的事件
+    searchBook(name) {
+      if (!name.trim()) return;
+      alert(name);
+      this.updataHistory(name);
     },
-    //根据历史寻找
-    history() {
-      alert(22);
+    //点击联想词
+    gotoGoods(item) {
+      alert(item.bookid);
+this.updataHistory(item.bookname);
+this.$router.push({
+      name: 'goodsdetail',
+      params: {
+        book:item
+  }
+})
     }
   },
   watch: {

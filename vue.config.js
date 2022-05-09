@@ -4,9 +4,14 @@
 
  })
 
-//内网穿透设置
+// 内网穿透设置
 // module.exports = {
 //   devServer: {
 //     allowedHosts: 'all'
 //   }
 // }
+
+module.exports = {
+ // publicPath:'./'
+}
+

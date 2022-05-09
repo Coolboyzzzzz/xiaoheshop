@@ -9,3 +9,11 @@ export const banner = () =>{
 export const suggest = (data) => {
     return http.get('/suggest/suggest?query='+data)
 }
+//获取商品详细信息
+export const getBookdetail = (name) => {
+    return http.get('/suggest/getBookdetail?bookname='+name)
+}
+
+export const Rank = () => {
+    return http.get('/suggest/rank')
+}

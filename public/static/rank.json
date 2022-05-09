@@ -1,67 +1,67 @@
 {
     "res": [
         {
-            "name": "阅读的方法",
-            "id": 1,
-            "price": 34.50,
-            "sum": 69,
-            "img": "../../static/img/p4.webp",
+            "bookname": "阅读的方法",
+            "bookid": 1,
+            "bookprice": 34.50,
+            "bookstock": 69,
+            "bookphoto": "../../static/img/p4.webp",
             "discount": 0.8
         },
         {
-            "name": "大话中国艺术史",
-            "id": 2,
-            "price": 69,
-            "sum": 169,
-            "img": "../../static/img/p4.webp",
+            "bookname": "大话中国艺术史",
+            "bookid": 2,
+            "bookprice": 69,
+            "bookstock": 169,
+            "bookphoto": "../../static/img/p4.webp",
             "discount": 0.8
         },
         {
-            "name": "南明史",
-            "id": 3,
-            "price": 66,
-            "sum": 669,
-            "img": "../../static/img/p4.webp",
+            "bookname": "南明史",
+            "bookid": 3,
+            "bookprice": 66,
+            "bookstock": 669,
+            "bookphoto": "../../static/img/p4.webp",
             "discount": 0.8
         },
         {
-            "name": "全世界有你就好",
-            "id": 4,
-            "price": 34.50,
-            "sum": 69,
-            "img": "../../static/img/p4.webp",
+            "bookname": "全世界有你就好",
+            "bookid": 4,
+            "bookprice": 34.50,
+            "bookstock": 69,
+            "bookphoto": "../../static/img/p4.webp",
             "discount": 0.8
         },
         {
-            "name": "宋辽金夏",
-            "id": 5,
-            "price": 34.50,
-            "sum": 69,
-            "img": "../../static/img/p4.webp",
+            "bookname": "宋辽金夏",
+            "bookid": 5,
+            "bookprice": 34.50,
+            "bookstock": 69,
+            "bookphoto": "../../static/img/p4.webp",
             "discount": 0.8
         },
         {
-            "name": "小家大变局",
-            "id": 6,
-            "price": 384.50,
-            "sum": 69,
-            "img": "../../static/img/p4.webp",
+            "bookname": "小家大变局",
+            "bookid": 6,
+            "bookprice": 384.50,
+            "bookstock": 69,
+            "bookphoto": "../../static/img/p4.webp",
             "discount": 0.8
         },
         {
-            "name": "一古拉的岔路口奇遇",
-            "id": 7,
-            "price": 34.50,
-            "sum": 769,
-            "img": "../../static/img/p4.webp",
+            "bookname": "一古拉的岔路口奇遇",
+            "bookid": 7,
+            "bookprice": 34.50,
+            "bookstock": 769,
+            "bookphoto": "../../static/img/p4.webp",
             "discount": 0.8
         },
         {
-            "name": "停止你的内在战争",
-            "id": 8,
-            "price": 374.50,
-            "sum": 6669,
-            "img": "../../static/img/p4.webp",
+            "bookname": "停止你的内在战争",
+            "bookid": 8,
+            "bookprice": 374.50,
+            "bookstock": 6669,
+            "bookphoto": "../../static/img/p4.webp",
             "discount": 0.8
         }
     ]

@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-     <particles class="bc"/> 
+     <!-- <particles class="bc"/>  -->
 <Header></Header>
     <router-view/>
     <Footer></Footer>
@@ -25,6 +25,7 @@ particles
  #app{
    background-color: rgb(252,252,252);
          position: relative;
+         min-width: 1200px;
  }
  </style>
  

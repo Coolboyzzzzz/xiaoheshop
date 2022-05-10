@@ -6,17 +6,17 @@
     <el-row>
       <el-col :span="12">
               <div class="left">
-      <input type="checkbox" :checked='goods.goods_state' @click="changeState">
-      <img :src="goods.goods_photo">
-      <span>{{goods.goods_name}}</span>
+      <input type="checkbox" :checked='book.book_state' @click="changeState">
+      <img :src="book.bookphoto">
+      <span>{{book.bookname}}</span>
     </div>
       </el-col>
       <el-col :span="3">
-        <div class="grid-content"><span class='forward'>￥{{goods.goods_price}}</span><div class="current">￥{{discountPrice}}</div></div>
+        <div class="grid-content"><span class='forward'>￥{{book.bookprice}}</span><div class="current">￥{{discountPrice}}</div></div>
         
       </el-col>
       <el-col :span="3">
-        <div class="grid-content"><el-input-number  v-model="goods.goods_count" @change="goodsNum" :min="1" :max="10" size="mini"  />
+        <div class="grid-content"><el-input-number  v-model="book.book_count" @change="goodsNum" :min="1" :max="10" size="mini"  />
             </div>
       </el-col>
       <el-col :span="3">
@@ -40,7 +40,7 @@ export default {
         //     type:Number,
         //     default:0.8
         // },
-        // goods__pic:{
+        // book__pic:{
         //     type:String,
         //     default:'https://img.alicdn.com/tfs/TB18DwDbcLJ8KJjy0FnXXcFDpXa-126-36.png'
         // },
@@ -48,17 +48,17 @@ export default {
         //     type:String,
         //     default:'愿你历尽千帆归来仍是少年'
         // },
-        goods:{
+        book:{
             type:Object,
             default: () => {
                 return {
-                    goods_id:1,
-                goods_price:85.35,
+                    bookid:1,
+                bookprice:85.35,
                 discount:0.8,
-                goods_photo:"https://img.alicdn.com/tfs/TB18DwDbcLJ8KJjy0FnXXcFDpXa-126-36.png",
-                goods_name:"愿你历尽千帆归来仍是少年",
-                goods_count:1,
-                goods_state:true
+                bookphoto:"https://img.alicdn.com/tfs/TB18DwDbcLJ8KJjy0FnXXcFDpXa-126-36.png",
+                bookname:"愿你历尽千帆归来仍是少年",
+                book_count:1,
+                book_state:true
                 }
 
             }
@@ -67,25 +67,25 @@ export default {
     methods:{
         //点击加减数量时进行触发
         goodsNum(val){
-          this.$emit('changNum',{goods_id:this.goods.goods_id,current:this.goods.goods_count})
+          this.$emit('changNum',{bookid:this.book.bookid,current:this.book.book_count})
         },
         //选中或者取消复选框触发
         changeState(){
-this.$emit('changeState',{goods_id:this.goods.goods_id})
+this.$emit('changeState',{bookid:this.book.bookid})
         },
         //点击删除按钮
         deletegoods(){
-    this.$emit('dele',this.goods.goods_id)        
+    this.$emit('dele',this.book.bookid)        
         }
             },
     computed:{
         total(){
-            return (this.goods.goods_count*this.discountPrice).toFixed(2)
+            return (this.book.book_count*this.discountPrice).toFixed(2)
         },
         discountPrice(){
-            return (this.goods.goods_price*this.goods.discount).toFixed(2)
+            return (this.book.bookprice*this.book.discount).toFixed(2)
         }
-    }
+    },
 };
 </script>
 

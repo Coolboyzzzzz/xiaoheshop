@@ -21,13 +21,14 @@
           </div>
           <!-- 显示满减的优惠金额 -->
           <div class="showmoney">
-            <span v-html="money"></span></div>
+            <span v-html="money"></span>
+          </div>
         </div>
         <div class="contentTop">
           <el-row :gutter="20">
             <el-col :span="2">
               <div class="grid-content">
-                <div class="selectAll" >
+                <div class="selectAll">
                   <input type="checkbox" @change="changeSelect" :checked="status">
                   <span>全选</span>
                 </div>
@@ -58,7 +59,7 @@
           @dele="deleteGoods"
           v-for="(goods,index) in cart"
           :key="index"
-          :goods="goods"
+          :book="goods"
         />
       </el-card>
     </template>
@@ -74,8 +75,7 @@
 //购物车为空的页面
 import empty from "./cartEmpty/empty.vue";
 import cartgoods from "./cartgoods/cartgoods.vue";
-import { mapState, mapMutations, mapGetters } from "vuex";
-import { getCart } from '@/api/user.js'
+import { mapState, mapMutations, mapGetters,mapActions } from "vuex";
 export default {
   components: {
     empty,
@@ -83,19 +83,23 @@ export default {
   },
   data() {
     return {
-      show: false,
-      cart:[]
+      show: false
     };
   },
   computed: {
+    ...mapState("m_cart", ["cart"]),
     ...mapGetters("m_cart", ["status", "total", "sum"]),
     money() {
       if (this.sum.pre < 100) {
-        return `还差<span style="color: #FF7800;font-size:14px;">${(100 - this.sum.pre).toFixed(2)}</span>元可参与<span style="color: #FF7800;font-size:14px;">满100减50</span>`;
-      } else {
-        return `已参与<span style="color: #FF7800;font-size:14px;">满100减50</span>,已优惠<span style="color: #FF7800;font-size:14px;">${(this.sum.pre - this.sum.cur).toFixed(
+        return `还差<span style="color: #FF7800;font-size:14px;">${(
+          100 - this.sum.pre
+        ).toFixed(
           2
-        )}</span>元`;
+        )}</span>元可参与<span style="color: #FF7800;font-size:14px;">满100减50</span>`;
+      } else {
+        return `已参与<span style="color: #FF7800;font-size:14px;">满100减50</span>,已优惠<span style="color: #FF7800;font-size:14px;">${(
+          this.sum.pre - this.sum.cur
+        ).toFixed(2)}</span>元`;
       }
     }
   },
@@ -111,11 +115,13 @@ export default {
             this.$refs["cur"].classList.add("total");
           });
         } else {
+          if(this.sum.pre == 0 ) return
           this.show = false;
           this.$nextTick(() => {
             this.$refs["pre"].style.textDecoration = "none";
             this.$refs["pre"].classList.add("total");
           });
+          
         }
       }
     }
@@ -125,8 +131,10 @@ export default {
       "updatanum",
       "updatacart",
       "checkedAll",
-      "deletegoods"
+      "deletegoods",
+      'saveServe'
     ]),
+        ...mapActions('m_cart',['getcart']),
     updataNum(obj) {
       this.updatanum(obj);
     },
@@ -134,22 +142,26 @@ export default {
       this.updatacart(obj);
     },
     changeSelect() {
-      console.log(45)
-      this.checkedAll(this.status);
+      this.checkedAll();
     },
     deleteGoods(id) {
       this.deletegoods(id);
     },
-    //获取购物车数据
-   async getCart(){
-  const {data:res} =   await  getCart()
-  if(res.code !== 200) return this.$message(res.message)
-  this.cart = res.message
-    }
+  
   },
-  created(){
-this.getCart()
-  }
+  created() {
+    this.getcart()
+  },
+  // beforeDestroy(){
+  //   console.log(212)
+  //   this.cart.forEach(item => {
+  //     this.saveServe({
+  //       bookid:item.bookid,
+  //       book_count: item.book_count,
+  //       book_state: item.book_state
+  //     })
+  //   })
+  // }
 };
 </script>
 

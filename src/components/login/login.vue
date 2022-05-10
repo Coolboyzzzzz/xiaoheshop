@@ -135,7 +135,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="danger" @click="submitRegister('register')">注册</el-button>
+          <el-button type="danger" @click="userRegister('register')">注册</el-button>
         </el-form-item>
       </el-form>
       <el-form
@@ -248,7 +248,7 @@ export default {
         } else {
           callback();
         }
-      }, 1000);
+      }, 500);
     };
     //确认密码验证
     var validatePass2 = (rule, value, callback) => {
@@ -355,7 +355,7 @@ export default {
       return Math.floor(Math.random() * (max - min) + min);
     },
     //注册事件
-    submitregister(formName) {
+    userRegister(formName) {
       this.$refs[formName].validate(async valid => {
         if (valid) {
           const { data: res } = await checkEmail({

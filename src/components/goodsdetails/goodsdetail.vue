@@ -138,13 +138,9 @@ export default {
     },
     addCart(){
     		const goods = {
-						goods_id: this.goodsData.bookid,
-						goods_name: this.goodsData.bookname,
-            goods_price: this.goodsData.bookprice,
-            goods_photo:this.goodsData.bookphoto,
-            goods_count: this.num,
-            discount:this.goodsData.discount,
-						goods_state: true
+						bookid: this.goodsData.bookid,
+            book_count: this.num,
+						book_state: true
           }
           this.addTocart(goods)
     }

@@ -88,6 +88,7 @@ export default {
           const res = await addAddress(this.formLabelAlign);
           if (res.data.code == 200) {
             this.$message(res.data.message);
+            this.$store.dispatch('m_address/initaddress')
             this.$emit("closehandler");
           } else {
             this.$message(res.data.message);

@@ -23,3 +23,14 @@ export const addCart = (data) => {
 export const getCart = () => {
     return http.get('/user/getCart')
     }
+
+//删除指定的购物车图书
+
+export const deleteCart = (data) => {
+    return http.get('/user/deleteCart?bookid='+data)
+    }
+
+//获取用户收货地址
+export const getaddress = () => {
+    return http.get('/user/getaddress')
+    }

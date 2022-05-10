@@ -29,9 +29,11 @@
             </div>
           </div>
           <span id="logo">
-            <router-link to="/center/myorder">我的订单</router-link>
-            <router-link to="/shopcart">我的购物车</router-link>
-            <a @click="ss">我的尚品汇</a>
+            <a style="border:none;">我的订单</a>
+            <a>我的购物车</a>
+            <a>会员中心</a>
+            <a>帮助中心</a>
+            <a>关于我们</a>
             <a>商家后台</a>
           </span>
         </div>
@@ -87,9 +89,9 @@
           </div>
         </div>
         <div style="width:200px;color:white;position: relative;">
-          <div class="searchtext" style="backgroundColor:red">
+          <div class="searchtext" style="backgroundColor:red" @click="gotoCart">
             <i style="font-size:20px;padding-right:5px" class="el-icon-shopping-cart-2"></i>
-            <router-link to="/mycart">购物车</router-link>
+            购物车
             <span>{{total}}</span>
           </div>
           <div class="searchtext" style="backgroundColor:rgb(246,246,246);">
@@ -103,7 +105,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations,mapGetters } from "vuex";
+import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
 import { getUserInfo } from "@/api/user.js";
 import { banner, suggest } from "@/api/recommend.js";
 export default {
@@ -117,24 +119,25 @@ export default {
       showsuggest: false,
       searchHistory: JSON.parse(window.localStorage.getItem("search")) || [], //搜索历史
       time: null, //防抖延时器
-      searchResult:false
+      searchResult: false
     };
   },
   created() {
     this.getUser();
     this.getrecommend();
-
+    this.getcart();
   },
   computed: {
     ...mapState("m_users", ["token", "userinfo"]),
-    ...mapGetters("m_cart", ['total']),
-    trueHistory(){
-      return this.searchHistory.reverse()
-    },
+    ...mapGetters("m_cart", ["total"]),
 
+    trueHistory() {
+      return this.searchHistory.reverse();
+    }
   },
   methods: {
-    ...mapMutations("m_users", ["updataUser", "updateToken"]),
+    ...mapMutations("m_users", ["updataUser", "updateToken", "initCart"]),
+    ...mapActions("m_cart", ["getcart"]),
     //制作用户默认头像信息
     async getUser() {
       if (!this.token) return;
@@ -155,22 +158,23 @@ export default {
       } = await banner();
       this.recommend = res.map(item => item.suggest);
     },
-    ss() {
-      console.log("cuee", this.token);
-          console.log(this.total)
+    gotoCart() {
+      this.$router.push("/mycart");
     },
     //退出登录事件
     quit() {
       //清空token
       this.updateToken("");
       //清空用户信息
-      this.updataUser({});
+      this.updataUser([]);
+      //清空购物车
+      this.$store.commit('m_cart/initCart',[])
       this.$message("退出登录成功！");
     },
     //得到搜索建议
     getSuggest() {
       //每次搜索都让他不显示
-      this.searchResult = false
+      this.searchResult = false;
       //如果输入为空则不请求,利用防抖进行搜索请求，减轻服务器压力
       if (this.input3.trim() == "") return (this.searchSuggest = []);
       clearTimeout(this.time);
@@ -180,14 +184,12 @@ export default {
         const res = await suggest(this.input3);
         this.searchSuggest = res.data.data;
         //如果真没有那么就改变状态让显示
-        if(this.searchSuggest.length == 0) this.searchResult = true
-        console.log(this.searchSuggest);
+        if (this.searchSuggest.length == 0) this.searchResult = true;
       }, 1000);
     },
     //点击搜索框时展开搜索建议
     transshow() {
       this.showsuggest = true;
-      console.log("chufa");
     },
     //失去焦点时关闭
     transNoshow() {
@@ -250,19 +252,20 @@ export default {
     //点击联想词
     gotoGoods(item) {
       alert(item.bookid);
-this.updataHistory(item.bookname);
-this.$router.push({
-      name: 'goodsdetail',
-      params: {
-        book:item
-  }
-})
+      this.updataHistory(item.bookname);
+      this.$router.push({
+        name: "goodsdetail",
+        params: {
+          book: item
+        }
+      });
     }
   },
   watch: {
     //监听token变化，每次变化更新用户信息
     token(new1, old) {
       this.getUser();
+      this.getcart();
     }
   }
 };
@@ -363,6 +366,7 @@ this.$router.push({
 }
 //头像样式
 /deep/.el-submenu .el-submenu__title {
+  height: 40px;
   line-height: 40px;
 }
 .nav-img {

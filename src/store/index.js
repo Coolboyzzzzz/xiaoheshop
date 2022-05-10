@@ -3,8 +3,8 @@ import Vuex from 'vuex'
 import users from './users/index.js'
 import category from './category.js'
 import cart from './cart.js'
+import address from './address.js'
 Vue.use(Vuex)
-
 export default new Vuex.Store({
   state: {
   },
@@ -17,6 +17,7 @@ export default new Vuex.Store({
   modules: {
     "m_users": users,
     "m_category":category,
-    "m_cart":cart
+    "m_cart":cart,
+    'm_address':address
   }
 })

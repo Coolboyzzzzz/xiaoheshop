@@ -12,8 +12,7 @@ export default {
             this.commit('m_users/saveToken',obj)
         },
         updataUser(state,obj) {
-            state.userinfo = obj
-            console.log('vuex145', state.userinfo)     
+            state.userinfo = obj 
         },
         saveToken(state,obj){
             window.localStorage.setItem('token',obj)

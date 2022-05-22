@@ -23,7 +23,20 @@
         <div class="grid-content"><span style="color: #f40;font-weight: 700;">￥{{total}}</span></div>
       </el-col>
       <el-col :span="3">
-        <div class="grid-content"><span class='delete' @click="deletegoods">删除</span></div>
+        <div class="grid-content">
+                  <el-popconfirm
+  confirm-button-text='确定'
+  cancel-button-text='取消'
+  icon="el-icon-info"
+  icon-color="red"
+  title="删除后不可恢复，你确定删除吗？"
+  @confirm='deletegoods'
+>
+<span slot="reference" class='delete'>删除</span>
+
+</el-popconfirm>
+       </div>     
+            
       </el-col>
     </el-row>
   </div>

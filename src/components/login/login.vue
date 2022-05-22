@@ -11,8 +11,8 @@
       <el-form-item prop="username">
         <el-input
           type="text"
-          :placeholder="holder"
-          :prefix-icon="styles == '用户名'? 'el-icon-user-solid' : 'el-icon-message'"
+          placeholder="请输入用户名/邮箱"
+          prefix-icon='el-icon-user-solid'
           v-model="ruleForm.username"
           autocomplete="off"
         ></el-input>
@@ -46,7 +46,7 @@
         <a>用户协议、隐私政策</a>
       </div>
       <el-form-item>
-        <el-button size="medium" type="danger" @click="submitLogin('SignIn',styles)">登录</el-button>
+        <el-button size="medium" type="danger"  @click="submitLogin('SignIn',styles)">登录</el-button>
       </el-form-item>
       <div id="register">
         <!-- 分别传入不同的值，动态渲染drawer组件 -->
@@ -274,7 +274,7 @@ export default {
       identifyCode: "",
       rules: {
         user: [
-          { required: true, message: `请输入${this.styles}`, trigger: "blur" },
+          { required: true, message: `请输入用户名`, trigger: "blur" },
           {
             pattern: /^[\u4e00-\u9fa5a-zA-Z0-9]{1,8}$/,
             message: "用户名不能有特殊符号"
@@ -304,16 +304,9 @@ export default {
             message: "请输入正确的邮箱"
           }
         ],
-        // phone: [
-        //   { required: true, message: "请输入手机号", trigger: "blur" },
-        //   // {
-        //   //   pattern: /^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,3,5-9]))\d{8}$/,
-        //   //   message: "请输入正确的手机号"
-        //   // }
-        // ]
         password: [{ required: true, message: "请输入密码", trigger: "blur" }],
         username: [
-          { required: true, message: `请输入${this.styles}`, trigger: "blur" }
+          { required: true, message: `请输入用户名或邮箱`, trigger: "blur" }
         ]
       },
       drawer: false, //控制注册页面的开关
@@ -386,25 +379,22 @@ export default {
               message: res.message
             });
           }
-          console.log(res);
-          //  .then((res,rej)=>{
-          //       console.log(res)
-          //       })
         } else {
           console.log("error submit!!");
           return false;
         }
       });
     },
-    //登录事件  用户名登录和邮箱登录
-    submitLogin(formName, cur) {
+     //登录事件  用户名登录和邮箱登录
+    submitLogin() {
       var fromdata = {
         username: this.ruleForm.username,
         password: this.ruleForm.password
       };
-      this.$refs[formName].validate(async valid => {
+      this.$refs["SignIn"].validate(async valid => {
         if (valid) {
-          if (cur == "用户名") {
+          var reg = /^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/;
+          if (!reg.test(this.ruleForm.username)) {
             const { data: res } = await login(fromdata);
             if (res.status === 200) {
               this.$notify.success({
@@ -412,8 +402,8 @@ export default {
                 message: res.message
               });
               //把服务器返回的token存储
-              this.updateToken(res.token)
-              this.$router.push('/home')
+              this.updateToken(res.token);
+              this.$router.push("/home");
             } else {
               this.$notify.error({
                 title: "失败",
@@ -427,8 +417,8 @@ export default {
                 title: "成功",
                 message: res.message
               });
-              this.updateToken(res.token)
-              this.$router.push('/home')
+              this.updateToken(res.token);
+              this.$router.push("/home");
             } else {
               this.$notify.error({
                 title: "失败",
@@ -474,7 +464,16 @@ export default {
           });
           this.loading = false;
         } else {
-          const res = await sendEmailapi({ email: this.ruleForm.email });
+          const {data:res} = await sendEmailapi({ email: this.ruleForm.email });
+          //如果邮件发送失败
+          if (res.code != 200) {
+            this.$notify.error({
+              title: "提示",
+              message: "邮件发送失败，请检查邮件是否合法，必须为qq邮箱！"
+            });
+            this.loading = false;
+            return
+          }
           this.disabled = true;
           this.loading = false;
           this.$notify.success({
@@ -535,11 +534,6 @@ if(res.code == 200){
 }
 
 })
-    }
-  },
-  computed: {
-    holder() {
-      return `请输入${this.styles}`;
     }
   }
 };

@@ -22,9 +22,10 @@
       </el-form-item>
       <el-form-item required label="地址信息:">
         <VDistpicker
-          :province="formLabelAlign.province"
-          :city="formLabelAlign.city"
-          :area="formLabelAlign.area"
+          province="广东省"
+          city="广州市"
+          area="海珠区"
+          @selected="onSelected"
           class="address"
         />
       </el-form-item>
@@ -58,14 +59,14 @@ export default {
         username: "",
         phone: "",
         address: "",
-        province: "广东省",
-        city: "广州市",
-        area: "海珠区"
+        province: "",
+        city: "",
+        area: ""
       },
       rules: {
         username: [
           { required: true, message: "请输入收货人姓名", trigger: "blur" },
-          { min: 3, max: 25, message: "长度在 3 到 25 个字符", trigger: "blur" }
+          { min: 1, max: 25, message: "长度在 1 到 25 个字符", trigger: "blur" }
         ],
         phone: [
           { required: true, message: "请输入收货人手机号", trigger: "blur" },
@@ -98,6 +99,13 @@ export default {
     },
       quit(){
       this.$emit("closehandler");
+  },
+  onSelected(data){
+    console.log(data)
+this.formLabelAlign.province =  data.province.value
+this.formLabelAlign.city =  data.city.value
+this.formLabelAlign.area =  data.area.value
+
   }
   },
 

@@ -38,6 +38,8 @@ import {
     DescriptionsItem,
     Tag,
     Dialog,
+    Empty,
+    Popconfirm
 } from 'element-ui'
 
 const coms = [
@@ -75,6 +77,8 @@ const coms = [
     DescriptionsItem,
     Tag,
     Dialog,
+    Empty,
+    Popconfirm
 ]
 export default {
     install(Vue, options) {

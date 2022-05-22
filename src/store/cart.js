@@ -49,7 +49,7 @@ export default {
             deleteCart(id)
         },
         //提交服务器储存
-        saveServe(state,obj) {
+        saveServe(state, obj) {
             addCart(obj)
         },
         //选中全部
@@ -59,6 +59,15 @@ export default {
                 x.book_state = state.all
                 this.commit('m_cart/saveServe', x)
             })
+        },
+        //删除已经生成订单的商品
+        deleteOrdergoods(state, id) {
+            state.cart.forEach(x => {
+                if (x.book_state == true) {
+                    this.commit('m_cart/deletegoods', x.bookid) 
+                }
+            }
+            )
         },
 
     },
@@ -102,8 +111,8 @@ export default {
                 return true
             }
         },
-        order(state){
-            return state.cart.filter( x => x.book_state == true) 
+        order(state) {
+            return state.cart.filter(x => x.book_state == true)
         }
     }
 }

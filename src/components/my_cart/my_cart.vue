@@ -166,9 +166,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-* {
-  z-index: 10;
-}
 .container {
   //为了防止背景覆盖
   position: relative;

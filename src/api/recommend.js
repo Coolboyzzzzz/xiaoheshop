@@ -14,6 +14,12 @@ export const getBookdetail = (name) => {
     return http.get('/suggest/getBookdetail?bookname='+name)
 }
 
+//获取图书排行榜
 export const Rank = () => {
     return http.get('/suggest/rank')
+}
+
+//获取图书排行榜
+export const bookSuggest = () => {
+    return http.get('/suggest/bookSuggest')
 }

@@ -13,6 +13,11 @@ export const login = (data) => {
 export const emailLogin = (data) =>{
     return http.post('/api/emailLogin',data)
 }
+
+//邮箱验证码登录
+export const emailCodeLogin =(data) => {
+    return http.post('/api/emailCodeLogin',data)
+}
 //发送邮件
 export const sendEmailapi = (data) => {
     return http.post('/api/sendEmail',data)

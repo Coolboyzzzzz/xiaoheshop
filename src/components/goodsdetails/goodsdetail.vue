@@ -1,7 +1,7 @@
 <template>
-  <div class="container">
+  <div class="container" >
     <div class="header">
-      <imgScale :src="goodsData.bookphoto"/>
+      <imgScale :src="goodsData.bookphoto" />
       <div class="detail">
         <span class="title">{{goodsData.bookname}}</span>
         <div class="author">
@@ -53,7 +53,7 @@
           库存：{{goodsData.bookstock}}
         </div>
         <div class="buy">
-          <a @click='addCart'>
+          <a @click="addCart">
             <i class="el-icon-shopping-cart-2"></i>加入购物车
           </a>
           <span style="color:#999;margin-left:100px;">
@@ -84,7 +84,7 @@
           <h4>出版时间： {{goodsData.bookdate | FormatDate}}</h4>
           <div class="bookdetail">
             <h1>内容简介</h1>
-          <h4> {{goodsData.booktext}}</h4> 
+            <h4>{{goodsData.booktext}}</h4>
           </div>
         </div>
       </div>
@@ -99,7 +99,7 @@
         <p>7.带塑封书籍一经拆封，不支持7天无理由退换，还请理解！</p>
       </div>
     </div>
-  </div>
+    </div>
 </template>
 
 <script>
@@ -107,7 +107,7 @@ import suggest from "@/components/rank/suggestCate.vue";
 import { getBookdetail } from "@/api/recommend.js";
 import VDistpicker from "v-distpicker";
 import imgScale from "./imgScale.vue";
-import {mapMutations}  from 'vuex'
+import { mapMutations } from "vuex";
 export default {
   components: {
     imgScale,
@@ -124,25 +124,37 @@ export default {
   created() {
     this.getbookDetail(this.$route.query.bookid);
   },
+  watch: {
+    '$route' (to, from) {
+        this.$router.go(0);
+    }
+},
   computed: {
     discount() {
       return (this.goodsData.bookprice * this.goodsData.discount).toFixed(2);
     }
   },
   methods: {
-    ...mapMutations('m_cart',['addTocart']),
+    ...mapMutations("m_cart", ["addTocart"]),
     async getbookDetail(id) {
       const res = await getBookdetail(id);
       this.goodsData = res.data.data;
       console.log(this.goodsData);
     },
-    addCart(){
-    		const goods = {
-						bookid: this.goodsData.bookid,
-            book_count: this.num,
-						book_state: true
-          }
-          this.addTocart(goods)
+    addCart() {
+      if (!this.$store.state.m_users.token) {
+        this.$message({message:"请先登录,即将跳转登录界面！",type:'warning'});
+        setTimeout(() => {
+            this.$router.push("/login");
+        }, 2000);
+      return
+      }
+      const goods = {
+        bookid: this.goodsData.bookid,
+        book_count: this.num,
+        book_state: true
+      };
+      this.addTocart(goods);
     }
   },
   //定义一个过滤器 格式化时间
@@ -386,8 +398,8 @@ export default {
     .bookdetail {
       padding: 20px;
       height: 400px;
-  width: 500px;
-  //    background-color: #eee;
+      width: 500px;
+      //    background-color: #eee;
       border: 3px solid rgba(116, 129, 141, 0.2);
       color: #333;
     }

@@ -16,18 +16,25 @@
               <el-tab-pane label="账号密码登录" name="first">
                 <!-- 封装登录组件 父向子传值 -->
                 <transition name="el-zoom-in-center">
-                  <login styles="用户名"/>
+                  <login/>
                 </transition>
               </el-tab-pane>
               <el-tab-pane label="邮箱登录" name="second">
-                <login styles="邮箱"/>
+                <loginEmail/>
               </el-tab-pane>
             </el-tabs>
           </template>
           <template v-else>
             <el-page-header @back="tranRegister" content="扫码登录"></el-page-header>
             <div class="code">
-              <qrcode class="qrcode" width="210" height="210"/>
+              <qrcode
+                class="qrcode"
+                width="210"
+                height="210"
+                :content="content"
+                @changeState="changeListen"
+                @changeCode="changeCode"
+              />
               <div class="code-help"></div>
             </div>
             <div style="text-align:center">
@@ -57,27 +64,75 @@
 
 <script>
 import login from "./login.vue";
+import loginEmail from "./loginEmail.vue";
 import qrcode from "./qrcode/index.vue";
+import { qrCode, changeState } from "@/api/login";
 export default {
   components: {
     login,
-    qrcode
+    qrcode,
+    loginEmail
   },
   data() {
     return {
       flag: true,
       activeName: "first",
-      img: []
+      img: [],
+      time: null,
+      content: null,
+      time2: null
     };
   },
   methods: {
     //转换到注册
     tranRegister() {
       this.flag = !this.flag;
+    },
+    changeListen(res) {
+      this.$store.commit("m_users/updateToken", res.token);
+    },
+    //轮询此二维码的状态
+    async changeCode(content) {
+      const { data: res } = await changeState(this.content);
+      if (res.code == 200) {
+        clearInterval(this.time);
+        clearInterval(this.timer2);
+        console.log(res);
+        this.$store.commit("m_users/updateToken", res.token);
+        this.$notify.success({
+          message: res.message
+        });
+        this.$router.push("/home");
+      }
+    },
+    //获得一个随机字符串
+    async getUUID() {
+      const res = await qrCode();
+      this.content = res.data;
     }
   },
   created() {
     this.img = [require("./img/code.png"), require("./img/pass.png")];
+  },
+  watch: {
+    flag(new1, old) {
+      if (!new1) {
+        this.getUUID();
+        this.time = setInterval(() => {
+          this.getUUID();
+        }, 30000);
+        this.timer2 = setInterval(() => {
+          this.changeCode();
+        }, 1000);
+      } else {
+        clearInterval(this.time);
+        clearInterval(this.timer2);
+      }
+    }
+  },
+  beforeDestroy() {
+    clearInterval(this.time);
+    clearInterval(this.timer2);
   }
 };
 </script>
@@ -188,6 +243,21 @@ export default {
   display: flex;
   justify-content: space-around;
 }
+//设置登陆表单的样式
+/deep/.el-tabs__nav-scroll{
+    width: 270px;
+    margin: 0 auto;
+
+    padding: 5px;
+    #tab-second{
+        border-left: 1.5px solid rgb(178,178,178)
+    }
+    .el-tabs__item{
+        font-weight: bold;
+        font-size: 20px;
+
+    }
+}
 
 /deep/.el-tab-pane {
   animation: hideIndex 0.6s;
@@ -207,14 +277,14 @@ export default {
     transform: rotateY(90deg);
     opacity: 0.5;
   }
-   50% {
-     transform: rotateY(180deg);
-     opacity: 0;
-   }
-   75% {
-     transform: rotateY(270deg);
-     opacity: 0;
-   }
+  50% {
+    transform: rotateY(180deg);
+    opacity: 0;
+  }
+  75% {
+    transform: rotateY(270deg);
+    opacity: 0;
+  }
   100% {
     opacity: 1;
     transform: rotateY(360deg);

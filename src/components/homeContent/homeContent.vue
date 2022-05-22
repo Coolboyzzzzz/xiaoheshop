@@ -7,15 +7,19 @@
 
     <div class="container">
       <!-- 轮播图 -->
+
       <div id="Carousel">
         <homeCate/>
         <div class="block">
-          <el-carousel :interval="4000" arrow="always" height="460px">
-            <el-carousel-item v-for="(url,index) in imgUrls" :key="index">
-              <el-image :src="url" fit="fill"></el-image>
-            </el-carousel-item>
-          </el-carousel>
+          <keep-alive>
+            <el-carousel :interval="4000" arrow="always" height="460px">
+              <el-carousel-item v-for="(url,index) in imgUrls" :key="index">
+                <el-image :src="url" fit="fill"></el-image>
+              </el-carousel-item>
+            </el-carousel>
+          </keep-alive>
         </div>
+
         <div class="gonggao">
           <el-image
             style="width:170px;height:165px;"
@@ -25,26 +29,50 @@
           <el-tabs class="title" v-model="activeName">
             <el-tab-pane label="信息公告" name="first">
               <ul>
-                <li><i class="el-icon-caret-right"></i><span> 茵曼大牌日</span></li>
-                <li><i class="el-icon-caret-right"></i><span>童书大世界 爆品童书抢购</span></li>
-                <li><i class="el-icon-caret-right"></i><span>图书每满100减50</span></li>
-                <li><i class="el-icon-caret-right"></i><span>中小学用书，每满100减50</span></li>
-                <li><i class="el-icon-caret-right"></i><span>水星家纺满700-150</span></li>
+                <li>
+                  <i class="el-icon-caret-right"></i>
+                  <span>茵曼大牌日</span>
+                </li>
+                <li>
+                  <i class="el-icon-caret-right"></i>
+                  <span>童书大世界 爆品童书抢购</span>
+                </li>
+                <li>
+                  <i class="el-icon-caret-right"></i>
+                  <span>图书每满100减50</span>
+                </li>
+                <li>
+                  <i class="el-icon-caret-right"></i>
+                  <span>中小学用书，每满100减50</span>
+                </li>
+                <li>
+                  <i class="el-icon-caret-right"></i>
+                  <span>水星家纺满700-150</span>
+                </li>
               </ul>
             </el-tab-pane>
             <el-tab-pane label="服务公告" name="second">
               <ul>
-                <li><i class="el-icon-caret-right"></i><span>关于谨防诈骗的重要提示</span></li>
-                <li><i class="el-icon-caret-right"></i><span>话费卡兑换当当礼品卡</span></li>
-                <li><i class="el-icon-caret-right"></i><span>【虚假发货】-处罚公告</span></li>
+                <li>
+                  <i class="el-icon-caret-right"></i>
+                  <span>关于谨防诈骗的重要提示</span>
+                </li>
+                <li>
+                  <i class="el-icon-caret-right"></i>
+                  <span>话费卡兑换当当礼品卡</span>
+                </li>
+                <li>
+                  <i class="el-icon-caret-right"></i>
+                  <span>【虚假发货】-处罚公告</span>
+                </li>
               </ul>
             </el-tab-pane>
           </el-tabs>
-            <el-carousel :interval="5000" indicator-position='none' initial-index='3' height="140px">
-    <el-carousel-item  v-for="(url,index) in imgUrls" :key="index">
-      <el-image :src="url" fit="fill"></el-image>
-    </el-carousel-item>
-  </el-carousel>
+          <el-carousel :interval="5000" indicator-position="none" :initial-index="3" height="140px">
+            <el-carousel-item v-for="(url,index) in imgUrls" :key="index">
+              <el-image :src="url" fit="fill"></el-image>
+            </el-carousel-item>
+          </el-carousel>
         </div>
       </div>
       <!--排行榜-->
@@ -52,7 +80,7 @@
         <!-- 排行榜组件 -->
         <rank-vue :rankData="rankData" @bookDetail="BookDetail"></rank-vue>
         <!--推荐书籍-->
-        <homeadvice @bookDetail="BookDetail"/>
+        <homeadvice :rankData="bookData" @bookDetail="BookDetail"/>
       </div>
     </div>
   </div>
@@ -60,7 +88,7 @@
 
 <script>
 import searchBar from "../searchBar/searchBar.vue";
-import { banner, Rank } from "@/api/recommend.js";
+import { banner, Rank, bookSuggest } from "@/api/recommend.js";
 import rankVue from "@/components/rank/suggestCate.vue";
 import homeCate from "@/components/homeContent/cate_nav/category.vue";
 import homeadvice from "@/components/advice/advice.vue";
@@ -78,7 +106,8 @@ export default {
       rankData: [],
       flag: true,
       discount: 0.8,
-      activeName: "first"
+      activeName: "first",
+      bookData: []
     };
   },
   computed: {
@@ -88,12 +117,19 @@ export default {
     }
   },
   methods: {
+    //获取图书排行
     async getRank() {
       const {
         data: { data: res }
       } = await Rank();
       this.flag = false;
       this.rankData = res;
+    },
+    //获取图书推荐
+    async getadviceBook() {
+      const { data: { data: res } } = await bookSuggest();
+     this.flag = false;
+      this.bookData = res;
     },
     BookDetail(id) {
       this.$router.push({ path: "/goodsdetail", query: { bookid: id } });
@@ -109,7 +145,6 @@ export default {
     switch() {
       const time = setInterval(() => {
         this.activeName = this.activeName == "first" ? "second" : "first";
-        console.log(2);
       }, 7000);
       //绑定事件 清楚定时器
       this.$once("hook:beforeDestroy", () => {
@@ -121,6 +156,7 @@ export default {
     this.getrecommend();
     this.getRank();
     this.switch();
+    this.getadviceBook();
   }
 };
 </script>
@@ -143,30 +179,30 @@ export default {
       vertical-align: bottom;
       height: 500px;
       text-align: center;
-      .title{
+      .title {
         height: 190px;
         border-top: 1px solid #eee;
-        border-bottom:  1px solid #eee;
+        border-bottom: 1px solid #eee;
       }
-ul{
-  li{
-    text-align: left;
-    height: 25px;
-    line-height: 25px;
-    color: red;
-    cursor: pointer;
-i{
-  color: #333;
-  font-size: 8px;
-}
-  }
-}
+      ul {
+        li {
+          text-align: left;
+          height: 25px;
+          line-height: 25px;
+          color: red;
+          cursor: pointer;
+          i {
+            color: #333;
+            font-size: 8px;
+          }
+        }
+      }
       /deep/ .el-tabs {
         width: 170px;
       }
-     /deep/ .el-tabs__header{
-       margin-bottom: 5px;
-     }
+      /deep/ .el-tabs__header {
+        margin-bottom: 5px;
+      }
       /deep/.el-tabs__item {
         padding: 0;
         width: 80px;
@@ -312,6 +348,20 @@ i{
 }
 /deep/.el-collapse-item__header {
   background-color: inherit;
+}
+/deep/.el-tabs__nav-scroll{
+    width: 270px;
+    margin: 0 auto;
+
+    padding: 5px;
+    #tab-second{
+        border-left: 1.5px solid rgb(178,178,178)
+    }
+    .el-tabs__item{
+        font-weight: bold;
+        font-size: 20px;
+
+    }
 }
 </style>
 

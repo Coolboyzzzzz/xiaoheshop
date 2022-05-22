@@ -5,8 +5,7 @@
 </template>
 <script>
 import QRCode from "qrcode";
-import {mapMutations} from 'vuex'
-import {qrCode,changeState} from '@/api/login'
+import { mapMutations } from "vuex";
 export default {
   name: "QRCode",
   props: {
@@ -18,73 +17,31 @@ export default {
       type: String,
       default: "100"
     },
+    content: {
+      type: String,
+      default: "279a281d-60f4-4783-ff46-b02719499f29"
+    }
   },
   data() {
     return {
-      canvasId: "",
-      timer: null,
-      content:'',
-      timerCode:null
+      canvasId: ""
     };
   },
-  computed: {},
   created() {
     this.$nextTick(() => {
-      this.getUUID();
       this.init();
     });
-    this.timer = setInterval(() => {
-      this.status();
-    }, 5000)
-    this.timerCode = setInterval(()=>{
-     this.getUUID();
-    },10000)
   },
-  mounted: function() {},
   methods: {
-    ...mapMutations('m_users',['updateToken']),
     init() {
       let width = this.width,
         height = this.height;
-        
       QRCode.toCanvas(
         document.getElementById("canvasId"),
         this.content,
-        { width, height},
+        { width, height },
         error => {}
       );
-    },
-    // getUUID() {
-    //   let d = new Date().getTime();
-    //   let uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
-    //     /[xy]/g,
-    //     function(c) {
-    //       let r = (d + Math.random() * 16) % 16 | 0;
-    //       d = Math.floor(d / 16);
-    //       return (c == "x" ? r : (r & 0x7) | 0x8).toString(16);
-    //     }
-    //   );
-    //   console.log(uuid)
-    //   return uuid;
-    // }
-    async getUUID() {
-      const res = await qrCode()
-      console.log(res);
-      this.content = res.data;
-    },
-    async status() {
-      const { data: res } = changeState(this.content)
-      if (res.status === 200) {
-        console.log(res);
-        res.rawData = JSON.parse(res.rawData);
-        this.updateToken(res)
-      //  window.sessionStorage('token',JSON.stringify(res))
-        this.$message(`欢迎回家${res.rawData.nickName}`);
-        clearInterval(this.timer);
-        this.$router.push("/home");
-      }
-
-      console.log(res);
     }
   },
   watch: {
@@ -92,11 +49,6 @@ export default {
     content() {
       this.init();
     }
-  },
-  //组件被销毁时就停止发送询问轮回
-  destroyed(){
-    clearInterval(this.timer)
-    clearInterval(this.timerCode)
   }
 };
 </script>

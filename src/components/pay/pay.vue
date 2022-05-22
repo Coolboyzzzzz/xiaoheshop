@@ -50,8 +50,8 @@
     </div>
     <div class="titlegoods">支付方式</div>
     <div style="padding:30px 0 10px;">
-      <el-radio v-model="radio1" label="1" border>在线支付</el-radio>
-      <el-radio v-model="radio1" label="2" border>货到付款</el-radio>
+      <el-radio v-model="radio2" label="1" border>在线支付</el-radio>
+      <el-radio v-model="radio2" label="2" border>货到付款</el-radio>
     </div>
     <div class="titlegoods">金额明细</div>
     <dl class="total">
@@ -82,7 +82,7 @@
       </dd>
     </dl>
     <div class="submit">
-      <el-button type="danger">提交订单</el-button>
+      <el-button type="danger" @click="submitOrder">提交订单</el-button>
     </div>
   </div>
 </template>
@@ -92,6 +92,7 @@ import cartgoods from "./gooddetail.vue";
 import addAddress from "./addAddress.vue";
 import addRess from "./address.vue";
 import switchAddress from "./switch.vue";
+import { order } from "@/api/pay.js";
 export default {
   components: {
     cartgoods,
@@ -103,7 +104,8 @@ export default {
     return {
       dialogVisible: false,
       dialogSwitch: false,
-      radio1: "1"
+      radio1: "1",
+      radio2:'1'
     };
   },
   created() {
@@ -115,6 +117,27 @@ export default {
       return this.$store.state.m_address.address[
         this.$store.state.m_address.index
       ];
+    }
+  },
+  methods: {
+    async submitOrder() {
+      console.log(this.addressCur);
+      const data = {
+        addressData: JSON.stringify(this.addressCur),
+        bookDetail: JSON.stringify(this.$store.getters["m_cart/order"]),
+        totalNum:this.$store.getters['m_cart/num'],
+        orderTotal: this.$store.getters["m_cart/sum"].cur
+      };
+
+      const { data: res } = await order(data);
+      if(res.code !== 200) return this.$message({type:'error',message:res.message})
+      //删除在购物车已选中的商品
+      this.$store.commit('m_cart/deleteOrdergoods')
+      this.$message({type:'success',message:res.message})
+
+      this.$store.commit('m_pay/updatapayoderId',res.orderId)
+      //路由传参
+      this.$router.push({path:'/payPage',query:{orderId:res.orderId}})
     }
   }
 };

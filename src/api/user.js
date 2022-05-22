@@ -34,3 +34,9 @@ export const deleteCart = (data) => {
 export const getaddress = () => {
     return http.get('/user/getaddress')
     }
+
+
+//绑定微信接口
+export const bindvxcode = (data) => {
+    return http.post('/user/bindvxcode',data)
+    }
